@@ -5,7 +5,7 @@
 
 static inline void initLeds(void)
 {
-    /* Set port B pin 4, 6, 7 and port H pin 7 for output */
+    /* Set port A pin 1, 3, 5 and port B pin 7 for output */
     DDRA |= _BV(PA1);
     DDRA |= _BV(PA3);
     DDRA |= _BV(PA5);
@@ -18,7 +18,7 @@ static inline void blinkLed(const char led) {
     /* Set port A pin high to turn LED on */
     PORTA |= _BV(led);
      _delay_ms(BLINK_DELAY_MS);
-     /* Set port A pin 0 low to turn red LED off */
+     /* Set port A pin low to turn LED off */
      PORTA &= ~_BV(led);
      _delay_ms(BLINK_DELAY_MS);
     
@@ -29,8 +29,11 @@ void main (void)
     initLeds();
 
     while (1) {
+        /* Blink red LED */
         blinkLed(PA1);
+        /* Blink green LED */
         blinkLed(PA3);
+        /* Blink blue LED */
         blinkLed(PA5);
     }
 }
