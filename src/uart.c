@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <stdio.h>
 
 #ifndef F_CPU
 #define F_CPU 16000000UL
@@ -29,7 +30,7 @@ int simple_uart0_putchar(char c, FILE *stream) {
     (void) stream;
     
     if (c == '\n') {
-        uart_putchar('\r', stream);
+        simple_uart0_putchar('\r', stream);
     }
     loop_until_bit_is_set(UCSR0A, UDRE0);
     UDR0 = c;
@@ -61,7 +62,7 @@ int simple_uart1_putchar(char c, FILE *stream) {
     (void) stream;
     
     if (c == '\n') {
-        uart_putchar('\r', stream);
+        simple_uart1_putchar('\r', stream);
     }
     loop_until_bit_is_set(UCSR1A, UDRE1);
     UDR1 = c;
