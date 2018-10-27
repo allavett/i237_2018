@@ -14,14 +14,14 @@ static inline void initLeds(void)
     PORTB &= ~_BV(DDB7);
 }
 
-static inline void blinkLed(const char led) {
+static inline void blinkLed(const char led)
+{
     /* Set port A pin high to turn LED on */
     PORTA |= _BV(led);
-     _delay_ms(BLINK_DELAY_MS);
-     /* Set port A pin low to turn LED off */
-     PORTA &= ~_BV(led);
-     _delay_ms(BLINK_DELAY_MS);
-    
+    _delay_ms(BLINK_DELAY_MS);
+    /* Set port A pin low to turn LED off */
+    PORTA &= ~_BV(led);
+    _delay_ms(BLINK_DELAY_MS);
 }
 
 void main (void)
