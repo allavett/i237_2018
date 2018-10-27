@@ -14,28 +14,23 @@ static inline void initLeds(void)
     PORTB &= ~_BV(DDB7);
 }
 
+static inline void blinkLed(const char led) {
+    /* Set port A pin high to turn LED on */
+    PORTA |= _BV(led);
+     _delay_ms(BLINK_DELAY_MS);
+     /* Set port A pin 0 low to turn red LED off */
+     PORTA &= ~_BV(led);
+     _delay_ms(BLINK_DELAY_MS);
+    
+}
+
 void main (void)
 {
     initLeds();
 
     while (1) {
-        /* Set port B pin 4 high to turn red LED on */
-        PORTA |= _BV(PA1);
-        _delay_ms(BLINK_DELAY_MS);
-        /* Set port A pin 0 low to turn red LED off */
-        PORTA &= ~_BV(PA1);
-        _delay_ms(BLINK_DELAY_MS);
-        /* Set port A pin 2 high to turn green LED on */
-        PORTA |= _BV(PA3);
-        _delay_ms(BLINK_DELAY_MS);
-        /* Set port A pin 2 low to turn green LED off */
-        PORTA &= ~_BV(PA3);
-        _delay_ms(BLINK_DELAY_MS);
-        /* Set port A pin 4 high to turn blue LED on */
-        PORTA |= _BV(PA5);
-        _delay_ms(BLINK_DELAY_MS);
-        /* Set port A pin 4 low to turn blue LED off */
-        PORTA &= ~_BV(PA5);
-        _delay_ms(BLINK_DELAY_MS);
+        blinkLed(PA1);
+        blinkLed(PA3);
+        blinkLed(PA5);
     }
 }
