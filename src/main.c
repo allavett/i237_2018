@@ -21,21 +21,23 @@ static inline void init_uartio(void)
     simple_uart0_init();
     stdout = &simple_uart0_io;
     stdin = &simple_uart0_io;
-    fprintf_P(stdout, PSTR(STUDENT_NAME));
-    print_banner_P(stdout, banner, BANNER_ROW_COUNT);    
+    fprintf_P(stdout, student_name);
+    print_banner_P(stdout, banner, BANNER_ROW_COUNT);
 }
 
 static inline void month_lookup(void)
 {
     char letterOfMonth = 0;
-    fprintf_P(stdout, PSTR(INPUT_ASK_LETTER));
+    fprintf_P(stdout, input_ask_letter);
+
     if (scanf("%c", &letterOfMonth)) {
         printf("%c\n", letterOfMonth);
+
         for (uint8_t i = 0; i < NAME_MONTH_COUNT; i++) {
             if (!strncmp_P(&letterOfMonth, (PGM_P) pgm_read_word(&months_table[i]), 1)) {
                 fprintf_P(stdout, (PGM_P) pgm_read_word(&months_table[i]));
                 fprintf(stdout, "\n");
-            }           
+            }
         }
     }
 }
