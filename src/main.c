@@ -1,6 +1,8 @@
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 #include <util/delay.h>
 #include "uart.h"
+#include "hmi.h"
 
 #define BLINK_DELAY_MS 200
 
@@ -9,10 +11,27 @@ static inline void init_errcon(void)
 {
     simple_uart1_init();
     stderr = &simple_uart1_out;
-    fprintf(stderr, "Version: %s built on: %s %s\n",
-            FW_VERSION, __DATE__, __TIME__);
-    fprintf(stderr, "avr-libc version: %s avr-gcc version: %s\n",
-            __AVR_LIBC_VERSION_STRING__, __VERSION__);
+    fprintf_P(stderr, PSTR(VER_FV));
+    fprintf_P(stderr, PSTR(VER_LIBC));
+}
+
+/* Initialize UART0 IO */
+static inline void init_uartio(void)
+{
+    simple_uart0_init();
+    stdout = &simple_uart0_io;
+    stdin = &simple_uart0_io;
+    fprintf_P(stdout, PSTR(STUDENT_NAME));
+}
+
+static inline void month_lookup(void)
+{
+    char letterOfMonth = 0;
+    fprintf_P(stdout, PSTR(INPUT_ASK_LETTER));
+    if (scanf("%c", &letterOfMonth)) {
+        printf("%c\n", letterOfMonth);
+    }
+    
 }
 
 static inline void initLeds(void)
@@ -40,6 +59,7 @@ void main (void)
 {
     initLeds();
     init_errcon();
+    init_uartio();
 
     while (1) {
         /* Blink red LED */
@@ -48,5 +68,7 @@ void main (void)
         blinkLed(PA3);
         /* Blink blue LED */
         blinkLed(PA5);
+        /* Run function to read user input and find the month */
+        month_lookup();
     }
 }
