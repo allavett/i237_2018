@@ -1,11 +1,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#include <assert.h>
 #include "uart.h"
-#include "../lib/eriks_freemem/freemem.h"
 
-#define __ASSERT_USE_STDERR
-#define BLINK_DELAY_MS 20
+#define BLINK_DELAY_MS 200
 
 /* Initialize error console as stderr in UART1 and print user code info */
 static inline void init_errcon(void)
