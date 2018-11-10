@@ -4,6 +4,7 @@
 #include "hmi.h"
 #include "print_helper.h"
 #include "uart.h"
+#include "../lib/hd44780_111/hd44780.h"
 
 /* Initialize error console as stderr in UART1 and print user code info */
 void init_errcon(void)
@@ -21,6 +22,7 @@ void init_uartio(void)
     stdout = &simple_uart0_io;
     stdin = &simple_uart0_io;
     fprintf_P(stdout, student_name);
+    fprintf(stdout, "\n");
     print_banner_P(stdout, banner, BANNER_ROW_COUNT);
 }
 
@@ -34,4 +36,12 @@ void initLeds(void)
     DDRB |= _BV(LED_YELLOW);
     /* Turn Arduino Mega yellow LED off */
     PORTB &= ~_BV(LED_YELLOW);
+}
+
+/* Initialize LCD */
+void init_lcd(void)
+{
+    lcd_init();
+    lcd_goto(LCD_ROW_1_START);
+    lcd_puts_P(student_name);
 }

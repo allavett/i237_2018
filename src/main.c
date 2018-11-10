@@ -4,6 +4,8 @@
 #include "hmi.h"
 #include "init.h"
 #include "print_helper.h"
+#include "../lib/hd44780_111/hd44780.h"
+#include <stdbool.h>
 
 static inline void month_lookup(void)
 {
@@ -12,11 +14,22 @@ static inline void month_lookup(void)
 
     if (scanf("%c", &letterOfMonth)) {
         printf("%c\n", letterOfMonth);
+        lcd_clr(LCD_ROW_2_START, LCD_VISIBLE_COLS);
+        lcd_goto(LCD_ROW_2_START);
+        bool input_match = false;
 
         for (uint8_t i = 0; i < NAME_MONTH_COUNT; i++) {
             if (!strncmp_P(&letterOfMonth, (PGM_P) pgm_read_word(&months_table[i]), 1)) {
                 fprintf_P(stdout, (PGM_P) pgm_read_word(&months_table[i]));
                 fprintf(stdout, "\n");
+                lcd_puts_P((PGM_P) pgm_read_word(&months_table[i]));
+                lcd_putc(' ');
+                input_match = true;
+            } else {
+                if (!input_match) {
+                    lcd_clr(LCD_ROW_2_START, LCD_VISIBLE_COLS);
+                    lcd_goto(LCD_ROW_2_START);
+                }
             }
         }
     }
@@ -37,6 +50,7 @@ void main (void)
     initLeds();
     init_errcon();
     init_uartio();
+    init_lcd();
 
     while (1) {
         /* Blink red LED */

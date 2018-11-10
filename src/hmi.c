@@ -1,7 +1,7 @@
 #include <avr/pgmspace.h>
 #include "hmi.h"
 
-const char student_name[] PROGMEM = "Allar Vendla\n";
+const char student_name[] PROGMEM = "Allar Vendla";
 const char input_ask_letter[] PROGMEM = "Enter Month name first letter >";
 
 const char string_0[] PROGMEM = "January";
