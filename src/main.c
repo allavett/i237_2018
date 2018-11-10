@@ -1,10 +1,10 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#include <string.h>
 #include <util/delay.h>
-#include "uart.h"
 #include "hmi.h"
-
-#define BLINK_DELAY_MS 200
+#include "print_helper.h"
+#include "uart.h"
 
 /* Initialize error console as stderr in UART1 and print user code info */
 static inline void init_errcon(void)
@@ -22,6 +22,7 @@ static inline void init_uartio(void)
     stdout = &simple_uart0_io;
     stdin = &simple_uart0_io;
     fprintf_P(stdout, PSTR(STUDENT_NAME));
+    print_banner_P(stdout, banner, BANNER_ROW_COUNT);    
 }
 
 static inline void month_lookup(void)
@@ -30,8 +31,13 @@ static inline void month_lookup(void)
     fprintf_P(stdout, PSTR(INPUT_ASK_LETTER));
     if (scanf("%c", &letterOfMonth)) {
         printf("%c\n", letterOfMonth);
+        for (uint8_t i = 0; i < NAME_MONTH_COUNT; i++) {
+            if (!strncmp_P(&letterOfMonth, (PGM_P) pgm_read_word(&months_table[i]), 1)) {
+                fprintf_P(stdout, (PGM_P) pgm_read_word(&months_table[i]));
+                fprintf(stdout, "\n");
+            }           
+        }
     }
-    
 }
 
 static inline void initLeds(void)
