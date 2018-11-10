@@ -1,29 +1,9 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
-#include <string.h>
 #include <util/delay.h>
 #include "hmi.h"
+#include "init.h"
 #include "print_helper.h"
-#include "uart.h"
-
-/* Initialize error console as stderr in UART1 and print user code info */
-static inline void init_errcon(void)
-{
-    simple_uart1_init();
-    stderr = &simple_uart1_out;
-    fprintf_P(stderr, PSTR(VER_FV));
-    fprintf_P(stderr, PSTR(VER_LIBC));
-}
-
-/* Initialize UART0 IO */
-static inline void init_uartio(void)
-{
-    simple_uart0_init();
-    stdout = &simple_uart0_io;
-    stdin = &simple_uart0_io;
-    fprintf_P(stdout, student_name);
-    print_banner_P(stdout, banner, BANNER_ROW_COUNT);
-}
 
 static inline void month_lookup(void)
 {
@@ -40,17 +20,6 @@ static inline void month_lookup(void)
             }
         }
     }
-}
-
-static inline void initLeds(void)
-{
-    /* Set port A pin 1, 3, 5 and port B pin 7 for output */
-    DDRA |= _BV(PA1);
-    DDRA |= _BV(PA3);
-    DDRA |= _BV(PA5);
-    DDRB |= _BV(DDB7);
-    /* Set port B pin 7 low to turn Arduino Mega yellow LED off */
-    PORTB &= ~_BV(DDB7);
 }
 
 static inline void blinkLed(const char led)
@@ -71,11 +40,11 @@ void main (void)
 
     while (1) {
         /* Blink red LED */
-        blinkLed(PA1);
+        blinkLed(LED_RED);
         /* Blink green LED */
-        blinkLed(PA3);
+        blinkLed(LED_GREEN);
         /* Blink blue LED */
-        blinkLed(PA5);
+        blinkLed(LED_BLUE);
         /* Run function to read user input and find the month */
         month_lookup();
     }
