@@ -8,6 +8,16 @@
 
 #define UART_BAUD 9600
 
+void init_sys_timer(void)
+{
+    TCCR1A = 0;
+    TCCR1B = 0;
+    TCCR1B |= _BV(WGM12); // Turn on CTC (Clear Timer on Compare)
+    TCCR1B |= _BV(CS12); // fCPU/256
+    OCR1A = 62549; // Note that it is actually two registers OCR5AH and OCR5AL
+    TIMSK1 |= _BV(OCIE1A); // Output Compare A Match Interrupt Enable
+}
+
 /* Initialize UART for outputting system information (uart0) and IO for user commands (uart1) */
 void init_uart(void)
 {

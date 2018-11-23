@@ -1,12 +1,15 @@
+#include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <util/delay.h>
+#include <stdbool.h>
+#include <time.h>
 #include "hmi.h"
 #include "init.h"
 #include "print_helper.h"
 #include "../lib/hd44780_111/hd44780.h"
 #include "../lib/andygock_avr_uart/uart.h"
-#include <stdbool.h>
+
 
 static inline void month_lookup(void)
 {
@@ -37,6 +40,23 @@ static inline void month_lookup(void)
     }
 }
 
+static inline void heartbeat(void)
+{
+    static time_t prev_time;
+    char ascii_buf[11] = {0x00};
+    time_t now = time(NULL);
+    if (prev_time != now) {
+        //Print uptime to uart1
+        ltoa(now, ascii_buf, 10);
+        uart1_puts_p(PSTR("Uptime: "));
+        uart1_puts(ascii_buf);
+        uart1_puts_p(PSTR(" s.\r\n"));
+        //Toggle LED
+        PORTA ^= _BV(LED_GREEN);
+        prev_time = now;
+    }
+}
+
 static inline void blinkLed(const char led)
 {
     /* Set port A pin high to turn LED on */
@@ -51,16 +71,18 @@ void main (void)
 {
     initLeds();
     init_uart();
+    init_sys_timer();
     init_lcd();
 
     while (1) {
-        /* Blink red LED */
-        blinkLed(LED_RED);
-        /* Blink green LED */
-        blinkLed(LED_GREEN);
-        /* Blink blue LED */
-        blinkLed(LED_BLUE);
+        heartbeat();
         /* Run function to read user input and find the month */
         //month_lookup();
     }
+}
+
+/* System timer ISR */
+ISR(TIMER1_COMPA_vect)
+{
+    system_tick();
 }
