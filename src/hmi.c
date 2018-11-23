@@ -1,8 +1,13 @@
 #include <avr/pgmspace.h>
 #include "hmi.h"
 
+#define VER_FV "Version: " FW_VERSION " built on: " __DATE__ " " __TIME__ "\r\n"
+#define VER_LIBC "avr-libc version: " __AVR_LIBC_VERSION_STRING__ " avr-gcc version: " __VERSION__ "\r\n"
+
 const char student_name[] PROGMEM = "Allar Vendla";
 const char input_ask_letter[] PROGMEM = "Enter Month name first letter >";
+const char ver_fw[] PROGMEM = VER_FV;
+const char ver_libc[] PROGMEM = VER_LIBC;
 
 const char string_0[] PROGMEM = "January";
 const char string_1[] PROGMEM = "February";

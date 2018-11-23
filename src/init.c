@@ -3,27 +3,22 @@
 #include "init.h"
 #include "hmi.h"
 #include "print_helper.h"
-#include "uart.h"
 #include "../lib/hd44780_111/hd44780.h"
+#include "../lib/andygock_avr_uart/uart.h"
 
-/* Initialize error console as stderr in UART1 and print user code info */
-void init_errcon(void)
-{
-    simple_uart1_init();
-    stderr = &simple_uart1_out;
-    fprintf_P(stderr, PSTR(VER_FV));
-    fprintf_P(stderr, PSTR(VER_LIBC));
-}
+#define UART_BAUD 9600
 
-/* Initialize UART0 IO */
-void init_uartio(void)
+/* Initialize UART for outputting system information (uart0) and IO for user commands (uart1) */
+void init_uart(void)
 {
-    simple_uart0_init();
-    stdout = &simple_uart0_io;
-    stdin = &simple_uart0_io;
-    fprintf_P(stdout, student_name);
-    fprintf(stdout, "\n");
-    print_banner_P(stdout, banner, BANNER_ROW_COUNT);
+    uart0_init(UART_BAUD_SELECT(UART_BAUD, F_CPU));
+    uart0_puts_p(student_name);
+    uart0_puts_p(PSTR("\r\n"));
+    print_banner_P(uart0_puts_p, banner, BANNER_ROW_COUNT);
+    uart1_init(UART_BAUD_SELECT(UART_BAUD, F_CPU));
+    uart1_puts_p(PSTR("System info.\r\n"));
+    uart1_puts_p(ver_fw);
+    uart1_puts_p(ver_libc);
 }
 
 /* Initialize LEDs */

@@ -5,23 +5,25 @@
 #include "init.h"
 #include "print_helper.h"
 #include "../lib/hd44780_111/hd44780.h"
+#include "../lib/andygock_avr_uart/uart.h"
 #include <stdbool.h>
 
 static inline void month_lookup(void)
 {
     char letterOfMonth = 0;
-    fprintf_P(stdout, input_ask_letter);
+    uart0_puts_p(input_ask_letter);
+    
 
-    if (scanf("%c", &letterOfMonth)) {
-        printf("%c\n", letterOfMonth);
+    if (uart0_getc()) {
+        uart0_puts(&letterOfMonth);
         lcd_clr(LCD_ROW_2_START, LCD_VISIBLE_COLS);
         lcd_goto(LCD_ROW_2_START);
         bool input_match = false;
 
         for (uint8_t i = 0; i < NAME_MONTH_COUNT; i++) {
             if (!strncmp_P(&letterOfMonth, (PGM_P) pgm_read_word(&months_table[i]), 1)) {
-                fprintf_P(stdout, (PGM_P) pgm_read_word(&months_table[i]));
-                fprintf(stdout, "\n");
+                uart0_puts_p((PGM_P) pgm_read_word(&months_table[i]));
+                uart0_puts("\n");
                 lcd_puts_P((PGM_P) pgm_read_word(&months_table[i]));
                 lcd_putc(' ');
                 input_match = true;
@@ -48,8 +50,7 @@ static inline void blinkLed(const char led)
 void main (void)
 {
     initLeds();
-    init_errcon();
-    init_uartio();
+    init_uart();
     init_lcd();
 
     while (1) {
@@ -60,6 +61,6 @@ void main (void)
         /* Blink blue LED */
         blinkLed(LED_BLUE);
         /* Run function to read user input and find the month */
-        month_lookup();
+        //month_lookup();
     }
 }
