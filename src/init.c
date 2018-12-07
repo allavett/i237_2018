@@ -10,9 +10,6 @@
 
 #define UART_BAUD 9600
 
-microrl_t rl;
-microrl_t *prl = &rl;
-
 void init_sys_timer(void)
 {
     TCCR1A = 0;
@@ -27,9 +24,10 @@ void init_sys_timer(void)
 void init_uart(void)
 {
     uart0_init(UART_BAUD_SELECT(UART_BAUD, F_CPU));
+    uart0_puts_p(console_started);
     uart0_puts_p(student_name);
     uart0_puts_p(PSTR("\r\n"));
-    print_banner_P(uart0_puts_p, banner, BANNER_ROW_COUNT);
+    uart0_puts_p(cmd_intro);
     uart1_init(UART_BAUD_SELECT(UART_BAUD, F_CPU));
     uart1_puts_p(PSTR("System info.\r\n"));
     uart1_puts_p(ver_fw);

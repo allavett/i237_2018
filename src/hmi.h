@@ -12,6 +12,7 @@
 
 extern const char ver_fw[] PROGMEM;
 extern const char ver_libc[] PROGMEM;
+extern const char console_started[];
 extern const char student_name[];
 extern const char cmd_intro[] PROGMEM;
 extern const char input_ask_letter[];
