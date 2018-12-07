@@ -2,42 +2,22 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <util/delay.h>
-#include <stdbool.h>
 #include <time.h>
+#include "cli_microrl.h"
 #include "hmi.h"
 #include "init.h"
 #include "print_helper.h"
-#include "../lib/hd44780_111/hd44780.h"
 #include "../lib/andygock_avr_uart/uart.h"
+#include "../lib/hd44780_111/hd44780.h"
+#include "../lib/helius_microrl/microrl.h"
 
+microrl_t rl;
+microrl_t *prl = &rl;
 
-static inline void month_lookup(void)
+void init_microrl(void)
 {
-    char letterOfMonth = 0;
-    uart0_puts_p(input_ask_letter);
-    
-
-    if (uart0_getc()) {
-        uart0_puts(&letterOfMonth);
-        lcd_clr(LCD_ROW_2_START, LCD_VISIBLE_COLS);
-        lcd_goto(LCD_ROW_2_START);
-        bool input_match = false;
-
-        for (uint8_t i = 0; i < NAME_MONTH_COUNT; i++) {
-            if (!strncmp_P(&letterOfMonth, (PGM_P) pgm_read_word(&months_table[i]), 1)) {
-                uart0_puts_p((PGM_P) pgm_read_word(&months_table[i]));
-                uart0_puts("\n");
-                lcd_puts_P((PGM_P) pgm_read_word(&months_table[i]));
-                lcd_putc(' ');
-                input_match = true;
-            } else {
-                if (!input_match) {
-                    lcd_clr(LCD_ROW_2_START, LCD_VISIBLE_COLS);
-                    lcd_goto(LCD_ROW_2_START);
-                }
-            }
-        }
-    }
+    microrl_init(prl, uart0_puts);
+    microrl_set_execute_callback(prl, cli_execute);
 }
 
 static inline void heartbeat(void)
@@ -45,6 +25,7 @@ static inline void heartbeat(void)
     static time_t prev_time;
     char ascii_buf[11] = {0x00};
     time_t now = time(NULL);
+
     if (prev_time != now) {
         //Print uptime to uart1
         ltoa(now, ascii_buf, 10);
@@ -69,15 +50,16 @@ static inline void blinkLed(const char led)
 
 void main (void)
 {
+    sei();
     initLeds();
     init_uart();
     init_sys_timer();
+    init_microrl();
     init_lcd();
 
     while (1) {
         heartbeat();
-        /* Run function to read user input and find the month */
-        //month_lookup();
+        microrl_insert_char(prl, (uart0_getc() & UART_STATUS_MASK));
     }
 }
 

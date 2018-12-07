@@ -1,12 +1,17 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#include "cli_microrl.h"
 #include "init.h"
 #include "hmi.h"
 #include "print_helper.h"
-#include "../lib/hd44780_111/hd44780.h"
 #include "../lib/andygock_avr_uart/uart.h"
+#include "../lib/hd44780_111/hd44780.h"
+#include "../lib/helius_microrl/microrl.h"
 
 #define UART_BAUD 9600
+
+microrl_t rl;
+microrl_t *prl = &rl;
 
 void init_sys_timer(void)
 {
