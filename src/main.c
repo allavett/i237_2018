@@ -3,7 +3,9 @@
 #include <avr/pgmspace.h>
 #include <util/delay.h>
 #include <time.h>
+#include "type_def.h"
 #include "cli_microrl.h"
+#include "door_state_helper.h"
 #include "hmi.h"
 #include "init.h"
 #include "print_helper.h"
@@ -61,6 +63,7 @@ void main (void)
     while (1) {
         heartbeat();
         microrl_insert_char(prl, (uart0_getc() & UART_STATUS_MASK));
+        door_control();
     }
 }
 

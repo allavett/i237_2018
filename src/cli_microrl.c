@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <avr/pgmspace.h>
+#include "type_def.h"
 #include "../lib/hd44780_111/hd44780.h"
 #include "../lib/andygock_avr_uart/uart.h"
 #include "../lib/helius_microrl/microrl.h"

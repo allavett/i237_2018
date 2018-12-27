@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "type_def.h"
 #include "print_helper.h"
 #include "card_list_helper.h"
 #include "../lib/andygock_avr_uart/uart.h"

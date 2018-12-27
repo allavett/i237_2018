@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#include "type_def.h"
 #include "cli_microrl.h"
 #include "init.h"
 #include "hmi.h"
