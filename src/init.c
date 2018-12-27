@@ -7,8 +7,16 @@
 #include "../lib/andygock_avr_uart/uart.h"
 #include "../lib/hd44780_111/hd44780.h"
 #include "../lib/helius_microrl/microrl.h"
+#include "../lib/matejx_avr_lib/mfrc522.h"
 
 #define UART_BAUD 9600
+
+void init_rfid_reader(void)
+{
+    /* Init RFID-­?RC522 */
+    MFRC522_init();
+    PCD_Init();
+}
 
 void init_sys_timer(void)
 {

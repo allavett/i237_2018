@@ -32,5 +32,19 @@ extern const char banner_cmd[] PROGMEM;
 extern const char banner_help[] PROGMEM;
 extern const char month_cmd[] PROGMEM;
 extern const char month_help[] PROGMEM;
+extern const char card_read_cmd[] PROGMEM;
+extern const char card_read_help[] PROGMEM;
+extern const char read_no_card[] PROGMEM;
+extern const char card_add_cmd[] PROGMEM;
+extern const char card_add_help[] PROGMEM;
+extern const char card_add_not_possible[] PROGMEM;
+extern const char card_remove_cmd[] PROGMEM;
+extern const char card_remove_help[] PROGMEM;
+extern const char card_remove_no_match[] PROGMEM;
+extern const char card_list_print_cmd[] PROGMEM;
+extern const char card_list_print_help[] PROGMEM;
+extern const char card_list_empty[] PROGMEM;
+extern const char mem_stat_cmd[] PROGMEM;
+extern const char mem_stat_help[] PROGMEM;
 
 #endif /* HMI_H */

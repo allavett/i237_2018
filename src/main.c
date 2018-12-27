@@ -53,6 +53,7 @@ void main (void)
     sei();
     initLeds();
     init_uart();
+    init_rfid_reader();
     init_sys_timer();
     init_microrl();
     init_lcd();
