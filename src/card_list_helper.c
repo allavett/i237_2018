@@ -24,6 +24,7 @@ card_t *create_card(card_t *card, const char *card_uid, const char *name)
     uint8_t bytes[uid_b_length];
     tallymarker_hextobin(card_uid, bytes, uid_s_length);
     card_t *current = card;
+    char snum[5];
 
     do {
         if (current != NULL) {
@@ -74,6 +75,13 @@ card_t *create_card(card_t *card, const char *card_uid, const char *name)
     strcpy(current->name, name);
     memcpy(current->card_uid, bytes, sizeof(bytes));
     current->next = NULL;
+    uart0_puts_p(PSTR("Successfully added a new card with UID: "));
+    print_bytes(current->card_uid, current->card_uid_len);
+    uart0_puts_p(PSTR(" ("));
+    uart0_puts(itoa(uid_b_length, snum, 10));
+    uart0_puts_p(PSTR(" bytes) holder name: "));
+    uart0_puts(current->name);
+    uart0_puts_p(PSTR("\r\n"));
     return (card != NULL) ? card : current;
 }
 
@@ -87,9 +95,18 @@ void remove_card(card_t **list_head_ptr, const char *rm_card_uid)
     tallymarker_hextobin(rm_card_uid, bytes, uid_s_length);
     card_t *current = *list_head_ptr;
     card_t *prev = NULL;
+    char snum[5];
 
     while (current != NULL) {
         if (memcmp(bytes, current->card_uid, current->card_uid_len) == 0) {
+            uart0_puts_p(PSTR("Removing card UID: "));
+            print_bytes(current->card_uid, current->card_uid_len);
+            uart0_puts_p(PSTR(" ("));
+            uart0_puts(itoa(uid_b_length, snum, 10));
+            uart0_puts_p(PSTR(" bytes) holder name: "));
+            uart0_puts(current->name);
+            uart0_puts_p(PSTR("\r\n"));
+            
             if (prev == NULL) {
                 card_t * temp_card = NULL;
                 temp_card = *list_head_ptr;
@@ -126,9 +143,9 @@ void print_card_list(card_t *list_head_ptr)
         uart0_puts(itoa(++counter, snum, 10));
         uart0_puts_p(PSTR(" Card UID: "));
         print_bytes(current->card_uid, current->card_uid_len);
-        uart0_puts_p(PSTR(" Card UID length: "));
+        uart0_puts_p(PSTR(" ("));
         uart0_puts(itoa(current->card_uid_len, snum, 10));
-        uart0_puts_p(PSTR(" Card holder: "));
+        uart0_puts_p(PSTR(" bytes), card holder: "));
         uart0_puts(current->name);
         uart0_puts_p(PSTR("\r\n"));
         current = current->next;

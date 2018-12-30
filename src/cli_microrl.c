@@ -174,7 +174,7 @@ void cli_card_remove(const char *const *argv)
         uart0_puts_p(card_remove_no_match);
         return;
     }
-
+    
     if (card_list_ptr != NULL) {
         remove_card(&card_list_ptr, card_uid_buf);
         return;

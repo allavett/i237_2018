@@ -3,16 +3,15 @@
 #include <time.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
-#include "../lib/matejx_avr_lib/mfrc522.h"
 #include "type_def.h"
 #include "card_list_helper.h"
 #include "cli_microrl.h"
 #include "hmi.h"
 #include "../lib/hd44780_111/hd44780.h"
+#include "../lib/matejx_avr_lib/mfrc522.h"
 
-
-#define DOOR_OPEN_IN_SEC    3
-#define DISPLAY_MSG_IN_SEC  2
+#define DOOR_OPEN_IN_SEC    2
+#define DISPLAY_MSG_IN_SEC  4
 
 typedef enum {
     door_opening,
@@ -33,7 +32,7 @@ byte BUFFER[2];
 door_state_t door_state = door_closing;
 display_state_t display_state = display_no_update;
 time_t time_y2k_cpy, door_open_time, msg_display_time;
- 
+
 
 door_state_t rfid_card_read (void)
 {
@@ -43,33 +42,26 @@ door_state_t rfid_card_read (void)
     door_state_t door_state;
     card_t *card_list = card_list_ptr;
 
-    if (card_list != NULL) {
-        if (PICC_IsNewCardPresent()) {
-            PICC_ReadCardSerial(card_uid_ptr);
-            PICC_WakeupA(BUFFER, &bufferSize);
+    if (PICC_IsNewCardPresent()) {
+        PICC_ReadCardSerial(card_uid_ptr);
+        PICC_WakeupA(BUFFER, &bufferSize);
 
-            while (card_list != NULL) {
-                if (memcmp(uid.uidByte, card_list->card_uid, uid.size) == 0) {
-                    card_holder = card_list->name;
-                    door_state = door_opening;
-                    return door_state;
-                }
-
-                card_list = card_list->next;
+        while (card_list != NULL) {
+            if (memcmp(uid.uidByte, card_list->card_uid, uid.size) == 0) {
+                card_holder = card_list->name;
+                door_state = door_opening;
+                return door_state;
             }
 
-            door_state = door_closed;
-            return door_state;
+            card_list = card_list->next;
         }
+
+        door_state = door_closed;
+        return door_state;
     }
 
     door_state = no_card;
     return door_state;
-}
-
-char *get_card_holder (void)
-{
-    return card_holder;
 }
 
 void door_control(void)
@@ -78,29 +70,28 @@ void door_control(void)
     char lcd_buf[16];
 
     switch (door_state) {
-        case door_opening:
-        // Document door open time
+    case door_opening:
+        // Save door open time
         door_open_time = time(NULL);
         // Get holder name
-        display_name_str = get_card_holder();
+        display_name_str = card_holder;
         display_state = display_name;
         PORTA |= _BV(LED_BLUE);
-        PORTA &= ~_BV(LED_RED);
         // Unlock door
         door_state = door_open;
         break;
 
-        case door_open:
+    case door_open:
         display_state = display_no_update;
 
         if (rfid_card_read() == door_opening) {
-            if (get_card_holder() != display_name_str) {
+            if (card_holder != display_name_str) {
                 door_state = door_opening;
             }
 
             //reset timer
             door_open_time = time(NULL);
-            } else if (rfid_card_read() == door_closed) {
+        } else if (rfid_card_read() == door_closed) {
             door_state = door_closing;
             display_state = display_access_denied;
         }
@@ -114,19 +105,18 @@ void door_control(void)
 
         break;
 
-        case door_closing:
+    case door_closing:
         display_state = display_clear;
         // Lock door
         door_state = door_closed;
         PORTA &= ~_BV(LED_BLUE);
-        PORTA |= _BV(LED_RED);
         break;
 
-        case door_closed:
+    case door_closed:
         door_state = no_card;
         break;
 
-        case no_card:
+    case no_card:
         // Ping reader for new state
         door_state = rfid_card_read();
 
@@ -139,7 +129,7 @@ void door_control(void)
     }
 
     switch (display_state) {
-        case display_name:
+    case display_name:
         lcd_clr(LCD_ROW_2_START, LCD_VISIBLE_COLS);
         lcd_goto(LCD_ROW_2_START);
 
@@ -148,7 +138,7 @@ void door_control(void)
             // You need to truncate name display because name can be long
             strncpy(lcd_buf, display_name_str, LCD_VISIBLE_COLS);
             lcd_puts(lcd_buf);
-            } else {
+        } else {
             lcd_puts_P(PSTR("Name read error"));
         }
 
@@ -156,7 +146,7 @@ void door_control(void)
         display_state = display_clear;
         break;
 
-        case display_access_denied:
+    case display_access_denied:
         lcd_clr(LCD_ROW_2_START, LCD_VISIBLE_COLS);
         lcd_goto(LCD_ROW_2_START);
         lcd_puts_P(PSTR("Access denied!"));
@@ -164,7 +154,7 @@ void door_control(void)
         display_state = display_clear;
         break;
 
-        case display_clear:
+    case display_clear:
         time_y2k_cpy = time(NULL);
 
         if ((time_y2k_cpy - msg_display_time) > DISPLAY_MSG_IN_SEC) {
@@ -174,7 +164,7 @@ void door_control(void)
 
         break;
 
-        case display_no_update:
+    case display_no_update:
         break;
     }
 }

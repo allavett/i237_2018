@@ -35,20 +35,20 @@ const char card_read_help[] PROGMEM =
 const char read_no_card[] PROGMEM = "Unable to select card!\r\n";
 const char card_add_cmd[] PROGMEM = "add";
 const char card_add_help[] PROGMEM =
-    "Add card to list  Usage: add <card UID> <card holder name>";
+    "Add card to list.\r\n\tUsage: add <card UID> <card holder name>";
 const char card_add_not_possible[] PROGMEM =
     "Card length must be 8-20 even number of characters!\r\n";
 const char card_remove_cmd[] PROGMEM = "rm";
 const char card_remove_help[] PROGMEM =
-    "Remove card from the list  Usage: rm <card UID>";
+    "Remove card from the list.\r\n\tUsage: rm <card UID>";
 const char card_remove_no_match[] PROGMEM =
     "Entered UID does not match with any cards on the list!\r\n";
 const char card_list_print_cmd[] PROGMEM = "print";
-const char card_list_print_help[] PROGMEM = "Print stored list of cards";
+const char card_list_print_help[] PROGMEM = "Print stored list of cards.";
 const char card_list_empty[] PROGMEM = "Card list is empty!\r\n";
 const char mem_stat_cmd[] PROGMEM = "mem";
 const char mem_stat_help[] PROGMEM =
-    "Print memory usage and change compared to previous call";
+    "Print memory usage and change compared to previous call.";
 
 const char string_0[] PROGMEM = "January";
 const char string_1[] PROGMEM = "February";
